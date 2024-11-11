@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="student-training-management-api-httpListenerConfig" doc:name="HTTP Listener config" doc:id="ed156147-daae-4d03-8a69-f406942f4c8d" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="2913ab85-4c3f-44ff-b453-705a170b33dc" >
+		<db:generic-connection url="${db.url}" driverClassName="${db.driverClassName}" user="${secure::db.user}" password="${secure::db.password}"/>
+	</db:config>
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="e36edbc4-7663-42a1-a45e-d1f24e0e3b6e" name="student-training-management-api-config" api="resource::ff68ccd1-00c8-408e-bc72-ee6a4379e70e:student-training-management-api:1.0.7:raml:zip:student-training-management-api.raml"/>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="bac2698a-351d-47c8-8021-3557eec9e9eb" file="${env}.yaml" key="${key}" />
+	<configuration-properties doc:name="Configuration properties" doc:id="602fd884-b6d2-46b7-a72e-cb05e4143f53" file="${env}.yaml" />
+</mule>

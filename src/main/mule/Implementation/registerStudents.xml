@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	    <flow name="post:\students:application\json:student-training-management-api-config">
+		<ee:transform doc:name="Transform Message" doc:id="41c6256a-a8aa-4636-a899-b117aa543e84" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> 
+{
+    "first_name": item.firstName,
+    "last_name":item.lastName,
+    "email": item.email,
+    "school": item.school,
+    "trainer_id": item.trainerId,
+    "training_status": item.trainingStatus,
+    "course_id": item.courseId
+}
+)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="076148fb-906d-45e0-b601-6fe65702171e" >
+			<try doc:name="Try" doc:id="d5c6f6a7-a5ff-4e3b-828c-d87d59ddb858" >
+				<db:insert doc:name="Insert" doc:id="a951d384-e089-4010-903e-89e05fbed2ca" target="insert" config-ref="Database_Config">
+				<db:sql><![CDATA[insert into students (first_name, last_name, email, school, trainer_id, training_status, course_id)
+values (:first_name, :last_name, :email, :school, :trainer_id, :training_status, :course_id)]]></db:sql>
+				<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+			</db:insert>
+				<ee:transform doc:name="Transform Message" doc:id="66f972a1-3ea6-404a-aaca-a769554c7668">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+"select * from students where email in" ++  "(" ++   "'" ++  (payload.email) ++  "'" ++  ")"]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+				<db:select doc:name="Select" doc:id="0ba20eae-83b2-4d0d-b5f1-6f79904233c7" config-ref="Database_Config">
+				<db:sql><![CDATA[#[payload]]]></db:sql>
+			</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="218f06d8-4dca-4b9d-a6d7-934030d083a5">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="registeredDetails"><![CDATA[%dw 2.0
+output application/json
+---
+	
+vars.registeredDetails default [] ++ payload
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7cb8d101-b9f5-49e5-b7d3-94c7f00ca0e5" >
+						<ee:transform doc:name="Transform Message" doc:id="64e4f034-a897-450e-b2e2-c352735cf1d1">
+						<ee:message>
+						</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="errorDetails" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.errorDetails default [] ++ [payload]]]></ee:set-variable>
+							</ee:variables>
+					</ee:transform>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="cb3dec95-9432-4998-81a7-43bac83c3e2c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars.registeredDetails map ((item, index) -> 
+{
+    "message": item.first_name ++" "++ item.last_name ++ " "++"registered with studentId"++" "++ item.student_id
+})default [] ) ++  
+(vars.errorDetails map ((item, index) -> 
+{
+    "message": "Could not register" ++" "++ item.first_name++ " "++ item.last_name ++ " "++ "because" ++ " "++ item.email ++ " "++ "is already registered"
+})default [])]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+	</mule>

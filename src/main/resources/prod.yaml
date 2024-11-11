@@ -1,0 +1,9 @@
+db:
+  url: "jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+  driverClassName: "org.postgresql.Driver"
+  user: "![tCY0zjzymo/O1tHdl6gnQohlXq550o8IlkcgJ0pORZ4=]"
+  password: "![eusyPpRcHFZNcV1xI79ZkP7i9JU0QqOoN/+huRr0UtM=]"
+  
+http:
+  host: "0.0.0.0"
+  port: "8083"

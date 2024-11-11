@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="delete:\students:application\json:student-training-management-api-config">
+        <set-variable value="#[payload]" doc:name="Set Variable" doc:id="0323d46c-44b8-44ac-af2c-f8edbfd4b2db" variableName="Ids"/>
+		<db:bulk-delete doc:name="Bulk delete" doc:id="3e742d9a-11b6-44aa-bd78-21eeb2ebeb37">
+			<db:sql ><![CDATA[delete from students where student_id = :studentId]]></db:sql>
+		</db:bulk-delete>
+		<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.Ids map ((item, index) -> 
+{
+    "message": "studentId" ++" "++ item.studentId ++ " " ++"deleted"
+    
+})]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	</mule>
