@@ -16,4 +16,5 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="e36edbc4-7663-42a1-a45e-d1f24e0e3b6e" name="student-training-management-api-config" api="resource::ff68ccd1-00c8-408e-bc72-ee6a4379e70e:student-training-management-api:1.0.7:raml:zip:student-training-management-api.raml"/>
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="bac2698a-351d-47c8-8021-3557eec9e9eb" file="${env}.yaml" key="${key}" />
 	<configuration-properties doc:name="Configuration properties" doc:id="602fd884-b6d2-46b7-a72e-cb05e4143f53" file="${env}.yaml" />
+	<configuration doc:name="Configuration" doc:id="a664e022-79de-4f05-b3b1-bb3a5e97ba5f" defaultErrorHandler-ref="errorHandlerError_Handler" />
 </mule>

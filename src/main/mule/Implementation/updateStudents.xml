@@ -27,5 +27,7 @@ vars.data map ((item, index) ->
 })]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow>
+		<error-handler ref="errorHandlerError_Handler" />
+    
+</flow>
 	</mule>
